@@ -22,15 +22,14 @@
 
 package nl.adaptivity.xml.serialization
 
-import kotlinx.serialization.UseSerializers
-import nl.adaptivity.xmlutil.QNameSerializer
-
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import nl.adaptivity.xmlutil.QName
+import nl.adaptivity.xmlutil.QNameSerializer
 import nl.adaptivity.xmlutil.serialization.XML
 import nl.adaptivity.xmlutil.serialization.XmlElement
 import nl.adaptivity.xmlutil.serialization.XmlSerialName
-import nl.adaptivity.xmlutil.serialization.XmlValue
+import kotlin.test.Test
 
 class QNameCollectNsAttrsTest : TestBase<QNameCollectNsAttrsTest.Container>(
     Container(Child1(Child2(QName("urn:foo", "bar", "baz")))),
@@ -40,6 +39,11 @@ class QNameCollectNsAttrsTest : TestBase<QNameCollectNsAttrsTest.Container>(
         "<container xmlns=\"urn:example.org\" xmlns:prefix2=\"urn:example.org/3\" xmlns:prefix3=\"urn:example.org/4\" xmlns:baz=\"urn:foo\"><prefix2:child1><prefix3:child2><prefix3:child>baz:bar</prefix3:child></prefix3:child2></prefix2:child1></container>"
     override val expectedJson: String =
         "{\"child\":{\"child\":{\"child\":{\"namespace\":\"urn:foo\",\"localPart\":\"bar\",\"prefix\":\"baz\"}}}}"
+
+    @Test
+    override fun testGenericSerializeXml() {
+        super.testGenericSerializeXml()
+    }
 
     enum class AddresStatus { VALID, INVALID, TEMPORARY }
 

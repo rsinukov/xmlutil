@@ -7,6 +7,7 @@ Features:
   out of order.
 Fixes:
 - Fix native parser for depth>=4
+- Fix storing comment events
 
 # 0.84.0-RC1
 *(Nov 3, 2021)<br />*
