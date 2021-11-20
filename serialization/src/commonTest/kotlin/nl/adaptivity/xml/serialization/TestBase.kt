@@ -38,8 +38,6 @@ import nl.adaptivity.xmlutil.serialization.copy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-expect fun assertXmlEquals(expected: String, actual:String)
-
 abstract class XmlTestBase<T>(
     val value: T,
     val serializer: KSerializer<T>,
@@ -57,7 +55,7 @@ abstract class XmlTestBase<T>(
 
     @Test
     open fun testSerializeXml() {
-        assertXmlEquals(expectedXML, serializeXml())
+        io.github.pdvrieze.xmlutil.testutil.assertXmlEquals(expectedXML, serializeXml())
     }
 
     @Test
@@ -65,7 +63,7 @@ abstract class XmlTestBase<T>(
         val stringBuilder = StringBuilder()
         val writer = XmlStreaming.newGenericWriter(stringBuilder)
         baseXmlFormat.encodeToWriter(writer, serializer, value)
-        assertXmlEquals(expectedXML, stringBuilder.toString().normalizeXml())
+        io.github.pdvrieze.xmlutil.testutil.assertXmlEquals(expectedXML, stringBuilder.toString().normalizeXml())
     }
 
     @Test

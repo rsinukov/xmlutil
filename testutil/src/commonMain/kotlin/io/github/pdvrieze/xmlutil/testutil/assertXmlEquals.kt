@@ -18,17 +18,17 @@
  * under the License.
  */
 
-package nl.adaptivity.xml.serialization
+package io.github.pdvrieze.xmlutil.testutil
 
 import nl.adaptivity.xmlutil.*
-import nl.adaptivity.xmlutil.XmlEvent.*
 import nl.adaptivity.xmlutil.core.KtXmlReader
 import nl.adaptivity.xmlutil.core.impl.multiplatform.StringReader
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
+
 @OptIn(ExperimentalXmlUtilApi::class)
-actual fun assertXmlEquals(expected: String, actual: String) {
+fun assertXmlEquals(expected: String, actual: String) {
     if (expected != actual) {
         val expectedReader = KtXmlReader(StringReader(expected)).apply { skipPreamble() }
         val actualReader = KtXmlReader(StringReader(actual)).apply { skipPreamble() }
@@ -70,19 +70,19 @@ fun assertXmlEquals(expected: XmlReader, actual: XmlReader): Unit {
 fun assertXmlEquals(expectedEvent: XmlEvent, actualEvent: XmlEvent) {
     assertEquals(expectedEvent.eventType, actualEvent.eventType, "Different event found")
     when (expectedEvent) {
-        is StartElementEvent -> assertStartElementEquals(expectedEvent, actualEvent as StartElementEvent)
-        is EndElementEvent -> assertEquals(expectedEvent.name, (actualEvent as EndElementEvent).name)
-        is TextEvent -> assertEquals(expectedEvent.text, (actualEvent as TextEvent).text)
+        is XmlEvent.StartElementEvent -> assertStartElementEquals(expectedEvent, actualEvent as XmlEvent.StartElementEvent)
+        is XmlEvent.EndElementEvent -> assertEquals(expectedEvent.name, (actualEvent as XmlEvent.EndElementEvent).name)
+        is XmlEvent.TextEvent -> assertEquals(expectedEvent.text, (actualEvent as XmlEvent.TextEvent).text)
     }
 }
 
-fun assertStartElementEquals(expectedEvent: StartElementEvent, actualEvent: StartElementEvent) {
+fun assertStartElementEquals(expectedEvent: XmlEvent.StartElementEvent, actualEvent: XmlEvent.StartElementEvent) {
     assertEquals(expectedEvent.name, actualEvent.name)
     assertEquals(expectedEvent.attributes.size, actualEvent.attributes.size)
 
-    val expectedAttrs = expectedEvent.attributes.map { Attribute(it.namespaceUri, it.localName, "", it.value) }
+    val expectedAttrs = expectedEvent.attributes.map { XmlEvent.Attribute(it.namespaceUri, it.localName, "", it.value) }
         .sortedBy { "{${it.namespaceUri}}${it.localName}" }
-    val actualAttrs = actualEvent.attributes.map { Attribute(it.namespaceUri, it.localName, "", it.value) }
+    val actualAttrs = actualEvent.attributes.map { XmlEvent.Attribute(it.namespaceUri, it.localName, "", it.value) }
         .sortedBy { "{${it.namespaceUri}}${it.localName}" }
 
     assertContentEquals(expectedAttrs, actualAttrs)

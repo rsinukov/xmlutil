@@ -114,6 +114,9 @@ public actual abstract class Reader {
 }
 
 public actual open class StringReader(private val source: CharSequence): Reader() {
+
+    public actual constructor(source: String): this(source as CharSequence)
+
     private var offset: Int = 0
 
     override fun read(): Int = when {

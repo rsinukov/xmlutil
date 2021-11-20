@@ -20,66 +20,19 @@
 
 package nl.adaptivity.xml.serialization
 
+import io.github.pdvrieze.xmlutil.testutil.assertXmlEquals
 import kotlinx.dom.isElement
 import kotlinx.dom.isText
 import nl.adaptivity.js.util.iterator
+import nl.adaptivity.xmlutil.XmlStreaming
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.parsing.DOMParser
 import kotlin.test.assertEquals
 
-actual fun assertXmlEquals(expected: String, actual: String) {
-    if (expected != actual) {
-        val expectedDom = DOMParser().parseFromString(expected, "text/xml")
-        val actualDom = DOMParser().parseFromString(actual, "text/xml")
-
-        try {
-            assertXmlEquals(expectedDom, actualDom)
-        } catch (e: AssertionError) {
-            try {
-                assertEquals(expected, actual)
-            } catch (f: AssertionError) {
-                f.addSuppressed(e)
-                throw f
-            }
-        }
-    }
-}
-
-fun assertXmlEquals(expected: Node, actual: Node): Unit = when {
-    expected.nodeType != actual.nodeType
-         -> throw AssertionError("Node types for $expected and $actual are not the same")
-    expected.nodeType == Node.DOCUMENT_NODE
-         -> assertXmlEquals((expected as Document).documentElement!!, (actual as Document).documentElement!!)
-    expected.isElement -> assertElementEquals(expected as Element, actual as Element)
-    expected.isText -> assertEquals(expected.textContent, actual.textContent)
-
-//    !expected.isEqualNode(actual)
-//         -> throw AssertionError("Nodes $expected and $actual are not equal")
-    else -> println("Asserting equality for node ${expected} of type ${expected.nodeType}")
-}
-
-fun assertElementEquals(expected: Element, actual: Element) {
-    val expectedAttrsSorted = expected.attributes.iterator().asSequence().sortedBy { "${it.prefix}:${it.localName}" }.toList()
-    val actualAttrsSorted = actual.attributes.iterator().asSequence().sortedBy { "${it.prefix}:${it.localName}" }.toList()
-
-    val expectedString = expected.outerHTML
-    val actualString = actual.outerHTML
-
-    assertEquals(expectedAttrsSorted.size, actualAttrsSorted.size, "Sorted attribute counts should match: ${expectedString} & ${actualString}")
-    for ((idx, expectedAttr) in expectedAttrsSorted.withIndex()) {
-        val actualAttr = actualAttrsSorted[idx]
-        assertEquals(expectedAttr.localName, actualAttr.localName)
-        assertEquals(expectedAttr.namespaceURI, actualAttr.namespaceURI)
-    }
-
-    val expectedChildren = expected.childNodes.iterator().asSequence().filter { it.nodeType!=Node.TEXT_NODE || it.textContent!="" }.toList()
-    val actualChildren = actual.childNodes.iterator().asSequence().filter { it.nodeType!=Node.TEXT_NODE || it.textContent!="" }.toList()
-
-    assertEquals(expectedChildren.size, actualChildren.size, "Different child count")
-    for ((idx, expectedChild) in expectedChildren.withIndex()) {
-        val actualChild = actualChildren[idx]
-        assertXmlEquals(expectedChild, actualChild)
-    }
+fun assertXmlEquals(expected: Node, actual: Node): Unit {
+    val expectedReader = XmlStreaming.newReader(expected)
+    val actualReader = XmlStreaming.newReader(actual)
+    assertXmlEquals(expectedReader, actualReader)
 }

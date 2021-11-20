@@ -21,7 +21,6 @@
 package nl.adaptivity.xmlutil.serialization
 
 import kotlinx.serialization.json.Json
-import nl.adaptivity.xml.serialization.assertXmlEquals
 import nl.adaptivity.xmlutil.XmlStreaming
 import org.junit.jupiter.api.Test
 import javax.xml.parsers.DocumentBuilderFactory
@@ -34,10 +33,11 @@ class JvmSerializationTest {
     @Test
     fun `deserialize DOM node from xml`() {
         val contentText = "<tag>some text <b>some bold text<i>some bold italic text</i></b></tag>"
-        val doc = DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }.newDocumentBuilder().newDocument()
+        val doc =
+            DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }.newDocumentBuilder().newDocument()
         val expectedObj = doc.createElementNS("", "tag").apply {
             appendChild(doc.createTextNode("some text "))
-            appendChild(doc.createElementNS("","b").apply {
+            appendChild(doc.createElementNS("", "b").apply {
                 appendChild(doc.createTextNode("some bold text"))
                 appendChild(doc.createElementNS("", "i").apply {
                     appendChild(doc.createTextNode("some bold italic text"))
@@ -50,10 +50,10 @@ class JvmSerializationTest {
         }
         val deserialized = xml.decodeFromString(ElementSerializer, contentText)
 
-        val expected:String = XmlStreaming.toString(DOMSource(expectedObj))
-        val actual:String = XmlStreaming.toString(DOMSource(deserialized))
+        val expected: String = XmlStreaming.toString(DOMSource(expectedObj))
+        val actual: String = XmlStreaming.toString(DOMSource(deserialized))
         try {
-            assertXmlEquals(expected, actual)
+            io.github.pdvrieze.xmlutil.testutil.assertXmlEquals(expected, actual)
 
 //            assertEquals(expectedObj, deserialized)
         } catch (e: AssertionError) {
@@ -107,11 +107,13 @@ class JvmSerializationTest {
 
     @Test
     fun `deserialize DOM node from json`() {
-        val contentText = "{\"localname\":\"tag\",\"attributes\":{},\"content\":[[\"text\",\"some text \"],[\"element\",{\"localname\":\"b\",\"attributes\":{},\"content\":[[\"text\",\"some bold text\"],[\"element\",{\"localname\":\"i\",\"attributes\":{},\"content\":[[\"text\",\"some bold italic text\"]]}]]}]]}"
-        val doc = DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }.newDocumentBuilder().newDocument()
+        val contentText =
+            "{\"localname\":\"tag\",\"attributes\":{},\"content\":[[\"text\",\"some text \"],[\"element\",{\"localname\":\"b\",\"attributes\":{},\"content\":[[\"text\",\"some bold text\"],[\"element\",{\"localname\":\"i\",\"attributes\":{},\"content\":[[\"text\",\"some bold italic text\"]]}]]}]]}"
+        val doc =
+            DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }.newDocumentBuilder().newDocument()
         val expectedObj = doc.createElementNS("", "tag").apply {
             appendChild(doc.createTextNode("some text "))
-            appendChild(doc.createElementNS("","b").apply {
+            appendChild(doc.createElementNS("", "b").apply {
                 appendChild(doc.createTextNode("some bold text"))
                 appendChild(doc.createElementNS("", "i").apply {
                     appendChild(doc.createTextNode("some bold italic text"))
@@ -128,7 +130,7 @@ class JvmSerializationTest {
         val expected = XmlStreaming.toString(DOMSource(expectedObj))
         val actual = XmlStreaming.toString(DOMSource(deserialized))
         try {
-            assertXmlEquals(expected, actual)
+            io.github.pdvrieze.xmlutil.testutil.assertXmlEquals(expected, actual)
         } catch (e: AssertionError) {
             assertEquals(expected, actual)
             throw e // if we reach here, throw anyway
