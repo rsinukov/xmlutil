@@ -8,6 +8,8 @@ Features:
 Fixes:
 - Fix native parser for depth>=4
 - Fix storing comment events
+- Don't defer serializing inline values as that is not valid. This 
+  also addresses a potential similar issue when reordering.
 
 # 0.84.0-RC1
 *(Nov 3, 2021)<br />*
