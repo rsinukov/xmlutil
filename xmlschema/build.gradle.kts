@@ -119,6 +119,7 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-annotations-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
+                implementation(project(":testutil"))
             }
         }
         val javaShared by creating {
